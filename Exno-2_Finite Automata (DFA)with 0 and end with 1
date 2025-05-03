@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+// Define the states of the DFA
+typedef enum {
+    Q0, // Initial state (waiting for first character)
+    Q1, // State after first '0' is read
+    Q2, // Trap state (invalid string)
+    Q3  // Final state (valid string ending with '1')
+} State;
+
+// Function to simulate the DFA
+bool simulateDFA(const char *input) {
+    State currentState = Q0;
+    int length = strlen(input);
+    int i;  // Loop variable declared outside for C89 compatibility
+    
+    for (i = 0; i < length; i++) {
+        char c = input[i];
+        
+        // Ensure input only contains '0' or '1'
+        if (c != '0' && c != '1') {
+            return false;
+        }
+
+        switch (currentState) {
+            case Q0:
+                if (c == '0') currentState = Q1;
+                else currentState = Q2;
+                break;
+            case Q1:
+                if (c == '1') currentState = Q3;
+                // Stay in Q1 if another '0' comes
+                break;
+            case Q2:
+                // Once in trap state, stay there
+                break;
+            case Q3:
+                if (c == '1') currentState = Q3;
+                else currentState = Q1;
+                break;
+        }
+    }
+    
+    return (currentState == Q3);
+}
+
+int main() {
+    char input[100];
+    
+    printf("Enter a binary string (only 0 and 1 allowed): ");
+    scanf("%s", input);
+    
+    if (simulateDFA(input)) {
+        printf("String ACCEPTED (starts with 0 and ends with 1)\n");
+    } else {
+        printf("String REJECTED (doesn't meet the criteria)\n");
+    }
+    
+    return 0;
+}
