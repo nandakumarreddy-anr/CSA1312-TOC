@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+typedef enum {
+    Q0, Q1, Q2, Q3
+} State;
+
+bool simulateDFA(const char *input) {
+    State currentState = Q0;
+    int length = strlen(input);
+    int i;  // Declare loop variable outside the loop
+    
+    for (i = 0; i < length; i++) {
+        char c = input[i];
+        
+        switch (currentState) {
+            case Q0:
+                if (c == 'a') currentState = Q1;
+                else currentState = Q2;
+                break;
+            case Q1:
+                if (c == 'a') currentState = Q3;
+                else currentState = Q1;
+                break;
+            case Q2:
+                break;
+            case Q3:
+                if (c == 'a') currentState = Q3;
+                else currentState = Q1;
+                break;
+        }
+    }
+    return (currentState == Q3);
+}
+
+int main() {
+    char input[100];
+    printf("Enter a string (only 'a' and 'b' allowed): ");
+    scanf("%s", input);
+    
+    if (simulateDFA(input)) {
+        printf("String ACCEPTED\n");
+    } else {
+        printf("String REJECTED\n");
+    }
+    return 0;
+}
