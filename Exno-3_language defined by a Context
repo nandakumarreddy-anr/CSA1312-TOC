@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+bool isInLanguage(char *str, int start, int end);
+
+bool matchA(char *str, int *pos, int end) {
+    while (*pos < end) {
+        if (str[*pos] == '0' || str[*pos] == '1') {
+            (*pos)++;
+        } else {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool isInLanguage(char *str, int start, int end) {
+    // Check for the pattern 0...1
+    if (end - start < 2) return false; // At least 0 and 1 needed
+    
+    if (str[start] != '0' || str[end - 1] != '1') {
+        return false;
+    }
+    
+    int pos = start + 1;
+    return matchA(str, &pos, end - 1);
+}
+
+int main() {
+    char input[100];
+    
+    printf("Enter a string to check (only 0s and 1s): ");
+    scanf("%s", input);
+    
+    int length = strlen(input);
+    
+    if (isInLanguage(input, 0, length)) {
+        printf("The string \"%s\" belongs to the language.\n", input);
+    } else {
+        printf("The string \"%s\" does NOT belong to the language.\n", input);
+    }
+    
+    return 0;
+}
