@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+bool isPalindrome(const char *str, int left, int right) {
+    // Base case: empty string or single character
+    if (left >= right) {
+        return true;
+    }
+    
+    // Check if first and last characters match
+    if (str[left] != str[right]) {
+        return false;
+    }
+    
+    // Recursively check the substring
+    return isPalindrome(str, left + 1, right - 1);
+}
+
+bool belongsToCFG(const char *str) {
+    int length = strlen(str);
+    
+    // Check if the string consists only of 0s and 1s
+    for (int i = 0; i < length; i++) {
+        if (str[i] != '0' && str[i] != '1') {
+            return false;
+        }
+    }
+    
+    // Check if it's a palindrome
+    return isPalindrome(str, 0, length - 1);
+}
+
+int main() {
+    char input[100];
+    
+    printf("Enter a string to check (only 0s and 1s): ");
+    scanf("%s", input);
+    
+    if (belongsToCFG(input)) {
+        printf("The string \"%s\" belongs to the language defined by the CFG.\n", input);
+    } else {
+        printf("The string \"%s\" does NOT belong to the language defined by the CFG.\n", input);
+    }
+    
+    return 0;
+}
