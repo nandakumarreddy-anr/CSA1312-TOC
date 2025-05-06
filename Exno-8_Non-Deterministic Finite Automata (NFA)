@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+// Define the NFA states
+typedef enum {
+    Q0,  // Initial state
+    Q1,  // After seeing 'b'
+    Q2,  // Accept state (after seeing 'a' at end)
+    Q3   // Dead state/trap state
+} State;
+
+// Simulate the NFA
+bool simulateNFA(const char *input) {
+    State currentStates[] = {Q0};  // Start with initial state
+    int numStates = 1;
+    
+    for (int i = 0; input[i] != '\0'; i++) {
+        State nextStates[10];  // Max possible next states
+        int nextStateCount = 0;
+        
+        for (int j = 0; j < numStates; j++) {
+            State s = currentStates[j];
+            
+            // State transitions
+            if (s == Q0 && input[i] == 'b') {
+                nextStates[nextStateCount++] = Q1;
+            }
+            else if (s == Q1) {
+                if (input[i] == 'a') {
+                    nextStates[nextStateCount++] = Q2;
+                    nextStates[nextStateCount++] = Q1;  // NFA can stay in Q1
+                } else if (input[i] == 'b') {
+                    nextStates[nextStateCount++] = Q1;
+                }
+            }
+            else if (s == Q2) {
+                // If we're in accept state but more input comes, go to dead state
+                nextStates[nextStateCount++] = Q3;
+            }
+        }
+        
+        // If no transitions, go to dead state
+        if (nextStateCount == 0) {
+            nextStates[nextStateCount++] = Q3;
+        }
+        
+        // Update current states for next iteration
+        numStates = nextStateCount;
+        for (int k = 0; k < numStates; k++) {
+            currentStates[k] = nextStates[k];
+        }
+    }
+    
+    // Check if any of the current states is accept state (Q2)
+    for (int i = 0; i < numStates; i++) {
+        if (currentStates[i] == Q2) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+int main() {
+    char input[100];
+    
+    printf("Enter a string (only 'a' and 'b' allowed): ");
+    scanf("%s", input);
+    
+    // Validate input contains only 'a' and 'b'
+    for (int i = 0; input[i] != '\0'; i++) {
+        if (input[i] != 'a' && input[i] != 'b') {
+            printf("Invalid input: string must contain only 'a' and 'b'.\n");
+            return 1;
+        }
+    }
+    
+    if (simulateNFA(input)) {
+        printf("The string \"%s\" is ACCEPTED by the NFA (starts with 'b' and ends with 'a').\n", input);
+    } else {
+        printf("The string \"%s\" is REJECTED by the NFA.\n", input);
+    }
+    
+    return 0;
+}
