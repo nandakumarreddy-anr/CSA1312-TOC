@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+bool belongsToCFG(const char *str, int *pos);
+
+int main() {
+    char input[100];
+    
+    printf("Enter a string to check (only 0s and 1s): ");
+    scanf("%s", input);
+    
+    // Verify the string contains only 0s and 1s
+    for (int i = 0; input[i] != '\0'; i++) {
+        if (input[i] != '0' && input[i] != '1') {
+            printf("Invalid input: string must contain only 0s and 1s.\n");
+            return 1;
+        }
+    }
+    
+    int pos = 0;
+    bool valid = belongsToCFG(input, &pos);
+    
+    // Ensure we've consumed the entire string
+    if (valid && pos == strlen(input)) {
+        printf("The string \"%s\" belongs to the language defined by the CFG.\n", input);
+    } else {
+        printf("The string \"%s\" does NOT belong to the language defined by the CFG.\n", input);
+    }
+    
+    return 0;
+}
+
+bool belongsToCFG(const char *str, int *pos) {
+    int length = strlen(str);
+    int initial_pos = *pos;
+    
+    // Option 1: S → ε (empty string)
+    if (*pos == length) {
+        return true;
+    }
+    
+    // Option 2: S → 0S1
+    if (*pos < length && str[*pos] == '0') {
+        (*pos)++;
+        if (belongsToCFG(str, pos)) {
+            if (*pos < length && str[*pos] == '1') {
+                (*pos)++;
+                return true;
+            }
+        }
+        // Backtrack if this path fails
+        *pos = initial_pos;
+    }
+    
+    return false;
+}
